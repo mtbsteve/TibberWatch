@@ -30,7 +30,7 @@ struct PriceEntry: Identifiable, Codable {
         Calendar.current.component(.minute, from: startsAt)
     }
 
-    // True if 'now' falls within this 15-min slot
+    /// True if 'now' falls within this 15-min slot
     var isCurrentHour: Bool {
         let now = Date()
         return now >= startsAt && now < startsAt.addingTimeInterval(15 * 60)
@@ -103,11 +103,17 @@ struct PriceData {
     var currency: String
     var homeName: String
 
-    var minPrice: Double { (today + tomorrow).map(\.total).min() ?? 0 }
-    var maxPrice: Double { (today + tomorrow).map(\.total).max() ?? 1 }
-    var currentEntry: PriceEntry? { today.first(where: \.isCurrentHour) }
-    var averageToday: Double {
-        guard !today.isEmpty else { return 0 }
-        return today.map(\.total).reduce(0, +) / Double(today.count)
+    /// Stats for an explicit set of entries (used for the day currently displayed)
+    static func minPrice(of entries: [PriceEntry]) -> Double {
+        entries.map(\.total).min() ?? 0
     }
+    static func maxPrice(of entries: [PriceEntry]) -> Double {
+        entries.map(\.total).max() ?? 1
+    }
+    static func avgPrice(of entries: [PriceEntry]) -> Double {
+        guard !entries.isEmpty else { return 0 }
+        return entries.map(\.total).reduce(0, +) / Double(entries.count)
+    }
+
+    var currentEntry: PriceEntry? { today.first(where: \.isCurrentHour) }
 }

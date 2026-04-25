@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - Content View (Root)
+// MARK: - Root
 struct ContentView: View {
     @EnvironmentObject var store: TibberStore
 
@@ -31,42 +31,39 @@ struct PriceMainView: View {
     @EnvironmentObject var store: TibberStore
     let priceData: PriceData
 
+    // Computed stats based on the currently displayed day
+    private var displayedEntries: [PriceEntry] { store.displayedEntries }
+    private var minPrice: Double { PriceData.minPrice(of: displayedEntries) }
+    private var maxPrice: Double { PriceData.maxPrice(of: displayedEntries) }
+    private var avgPrice: Double { PriceData.avgPrice(of: displayedEntries) }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 6) {
-                // Header
                 headerSection
-
-                // Chart
                 chartSection
 
-                // Hour axis (00, 06, 12, 18, 24)
                 PriceLegendView(
-                    minPrice: priceData.minPrice,
-                    maxPrice: priceData.maxPrice,
+                    minPrice: minPrice,
+                    maxPrice: maxPrice,
                     currency: priceData.currency
                 )
 
-                // Min / Max labels
                 PriceMinMaxLabels(
-                    minPrice: priceData.minPrice,
-                    maxPrice: priceData.maxPrice
+                    minPrice: minPrice,
+                    maxPrice: maxPrice
                 )
 
-                // Current price card
                 if let current = priceData.currentEntry {
                     CurrentPriceCard(entry: current, currency: priceData.currency)
                 }
 
-                // Stats row
                 statsRow
 
-                // Day toggle (if tomorrow data exists)
                 if store.hasTomorrowData {
                     dayToggle
                 }
 
-                // Refresh info
                 if let updated = store.lastUpdated {
                     Text("Updated \(updated, style: .relative) ago")
                         .font(.system(size: 8))
@@ -78,7 +75,6 @@ struct PriceMainView: View {
         }
     }
 
-    // MARK: - Header
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 0) {
@@ -93,7 +89,7 @@ struct PriceMainView: View {
             Button {
                 Task { await store.fetchPrices() }
             } label: {
-                Image(systemName: store.isLoading ? "arrow.clockwise" : "arrow.clockwise")
+                Image(systemName: "arrow.clockwise")
                     .font(.system(size: 11))
                     .foregroundColor(.blue)
                     .rotationEffect(.degrees(store.isLoading ? 360 : 0))
@@ -103,42 +99,27 @@ struct PriceMainView: View {
         }
     }
 
-    // MARK: - Chart
     private var chartSection: some View {
         PriceChartView(
             entries: store.displayedEntries,
-            minPrice: priceData.minPrice,
-            maxPrice: priceData.maxPrice
+            minPrice: minPrice,
+            maxPrice: maxPrice
         )
         .padding(.vertical, 2)
     }
 
-    // MARK: - Stats
     private var statsRow: some View {
         HStack(spacing: 0) {
-            StatCell(
-                label: "Min",
-                value: String(format: "%.2f", priceData.minPrice),
-                color: .green
-            )
+            StatCell(label: "Min", value: String(format: "%.2f", minPrice), color: .green)
             Divider().frame(height: 24)
-            StatCell(
-                label: "Avg",
-                value: String(format: "%.2f", priceData.averageToday),
-                color: .yellow
-            )
+            StatCell(label: "Avg", value: String(format: "%.2f", avgPrice), color: .yellow)
             Divider().frame(height: 24)
-            StatCell(
-                label: "Max",
-                value: String(format: "%.2f", priceData.maxPrice),
-                color: .red
-            )
+            StatCell(label: "Max", value: String(format: "%.2f", maxPrice), color: .red)
         }
         .background(Color.white.opacity(0.05))
         .cornerRadius(8)
     }
 
-    // MARK: - Day Toggle
     private var dayToggle: some View {
         Button {
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -169,9 +150,7 @@ struct StatCell: View {
 
     var body: some View {
         VStack(spacing: 1) {
-            Text(label)
-                .font(.system(size: 8))
-                .foregroundColor(.secondary)
+            Text(label).font(.system(size: 8)).foregroundColor(.secondary)
             Text(value)
                 .font(.system(size: 11, weight: .semibold, design: .monospaced))
                 .foregroundColor(color)
@@ -227,8 +206,8 @@ struct CurrentPriceCard: View {
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(levelColor)
                 Text(entry.timeLabel)
-                        .font(.system(size: 8))
-                        .foregroundColor(.secondary)
+                    .font(.system(size: 8))
+                    .foregroundColor(.secondary)
             }
         }
         .padding(8)
@@ -307,7 +286,11 @@ struct TokenSetupView: View {
                     .autocorrectionDisabled()
 
                 Button("Save & Connect") {
-                    store.apiToken = tokenInput.trimmingCharacters(in: .whitespaces)
+                    let cleaned = tokenInput
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                        .components(separatedBy: .controlCharacters).joined()
+                        .components(separatedBy: .whitespacesAndNewlines).joined()
+                    store.apiToken = cleaned
                     Task { await store.fetchPrices() }
                 }
                 .font(.system(size: 11, weight: .semibold))
@@ -318,7 +301,6 @@ struct TokenSetupView: View {
                 .cornerRadius(8)
                 .disabled(tokenInput.trimmingCharacters(in: .whitespaces).isEmpty)
 
-                // Demo mode button
                 Button("Use Demo Data") {
                     store.apiToken = "demo"
                     store.priceData = DemoData.priceData

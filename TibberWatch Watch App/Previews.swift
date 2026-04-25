@@ -1,31 +1,33 @@
 import SwiftUI
 
-// MARK: - Previews
 #Preview("Main View") {
-    let store = TibberStore()
-    store.priceData = DemoData.priceData
-    store.apiToken = "demo"
-    return ContentView()
-        .environmentObject(store)
+    ContentView()
+        .environmentObject({
+            let store = TibberStore()
+            store.priceData = DemoData.priceData
+            store.apiToken = "demo"
+            return store
+        }())
 }
 
 #Preview("Loading") {
-    let store = TibberStore()
-    store.isLoading = true
-    store.apiToken = "demo"
-    return ContentView()
-        .environmentObject(store)
+    ContentView()
+        .environmentObject({
+            let store = TibberStore()
+            store.isLoading = true
+            store.apiToken = "demo"
+            return store
+        }())
 }
 
 #Preview("Setup") {
-    let store = TibberStore()
-    return ContentView()
-        .environmentObject(store)
+    ContentView()
+        .environmentObject(TibberStore())
 }
 
 #Preview("Chart Only") {
     let entries = DemoData.priceData.today
-    return PriceChartView(
+    PriceChartView(
         entries: entries,
         minPrice: entries.map(\.total).min() ?? 0,
         maxPrice: entries.map(\.total).max() ?? 1
