@@ -1,17 +1,13 @@
-//
-//  TibberWatchApp.swift
-//  TibberWatch Watch App
-//
-//  Created by STEPHAN SCHINDEWOLF on 24.04.26.
-//
-
 import SwiftUI
 
 @main
-struct TibberWatch_Watch_AppApp: App {
+struct TibberWatchApp: App {
+    @StateObject private var tibberStore = TibberStore()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(tibberStore)
         }
     }
 }
