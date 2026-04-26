@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		66C9C8B32F9BAB4A00A25777 /* TibberWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 66C9C8B22F9BAB4A00A25777 /* TibberWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		66C9C9132F9CB43900A25777 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 66C9C9062F9CB43900A25777 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +38,7 @@
 /* Begin PBXFileReference section */
 		66C9C8AC2F9BAB4A00A25777 /* TibberWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TibberWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C9C8B22F9BAB4A00A25777 /* TibberWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TibberWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		66C9C9062F9CB43900A25777 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -61,6 +63,7 @@
 		66C9C8A52F9BAB4A00A25777 = {
 			isa = PBXGroup;
 			children = (
+				66C9C9062F9CB43900A25777 /* README.md */,
 				66C9C8B62F9BAB4A00A25777 /* TibberWatch Watch App */,
 				66C9C8AD2F9BAB4A00A25777 /* Products */,
 			);
@@ -126,6 +129,9 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				KnownAssetTags = (
+					New,
+				);
 				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
@@ -169,6 +175,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66C9C9132F9CB43900A25777 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,6 +321,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 653FDRQ8RX;
@@ -346,7 +354,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=watchos*]" = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 653FDRQ8RX;
