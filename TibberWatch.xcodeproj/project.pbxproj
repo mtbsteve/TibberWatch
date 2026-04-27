@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		66C9C8B32F9BAB4A00A25777 /* TibberWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 66C9C8B22F9BAB4A00A25777 /* TibberWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		66C9C9132F9CB43900A25777 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 66C9C9062F9CB43900A25777 /* README.md */; };
+		66C9C9362F9E6A4A00A25777 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C9C9352F9E6A4A00A25777 /* WidgetKit.framework */; };
+		66C9C9382F9E6A4A00A25777 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C9C9372F9E6A4A00A25777 /* SwiftUI.framework */; };
+		66C9C9452F9E6A4D00A25777 /* TibberComplicationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 66C9C9332F9E6A4900A25777 /* TibberComplicationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -18,6 +21,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 66C9C8B12F9BAB4A00A25777;
 			remoteInfo = "TibberWatch Watch App";
+		};
+		66C9C9432F9E6A4D00A25777 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66C9C8A62F9BAB4A00A25777 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C9C9322F9E6A4900A25777;
+			remoteInfo = TibberComplicationExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -33,18 +43,61 @@
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66C9C94A2F9E6A4D00A25777 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				66C9C9452F9E6A4D00A25777 /* TibberComplicationExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		66C9C8AC2F9BAB4A00A25777 /* TibberWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TibberWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C9C8B22F9BAB4A00A25777 /* TibberWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TibberWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C9C9062F9CB43900A25777 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		66C9C9332F9E6A4900A25777 /* TibberComplicationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TibberComplicationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		66C9C9352F9E6A4A00A25777 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		66C9C9372F9E6A4A00A25777 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		66C9C9592F9E96C900A25777 /* TibberComplicationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TibberComplicationExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		66C9C9462F9E6A4D00A25777 /* Exceptions for "TibberComplication" folder in "TibberComplicationExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 66C9C9322F9E6A4900A25777 /* TibberComplicationExtension */;
+		};
+		66C9C9572F9E6C4900A25777 /* Exceptions for "TibberWatch Watch App" folder in "TibberComplicationExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models.swift,
+			);
+			target = 66C9C9322F9E6A4900A25777 /* TibberComplicationExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		66C9C8B62F9BAB4A00A25777 /* TibberWatch Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				66C9C9572F9E6C4900A25777 /* Exceptions for "TibberWatch Watch App" folder in "TibberComplicationExtension" target */,
+			);
 			path = "TibberWatch Watch App";
+			sourceTree = "<group>";
+		};
+		66C9C9392F9E6A4A00A25777 /* TibberComplication */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				66C9C9462F9E6A4D00A25777 /* Exceptions for "TibberComplication" folder in "TibberComplicationExtension" target */,
+			);
+			path = TibberComplication;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -57,14 +110,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66C9C9302F9E6A4900A25777 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66C9C9382F9E6A4A00A25777 /* SwiftUI.framework in Frameworks */,
+				66C9C9362F9E6A4A00A25777 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		66C9C8A52F9BAB4A00A25777 = {
 			isa = PBXGroup;
 			children = (
+				66C9C9592F9E96C900A25777 /* TibberComplicationExtension.entitlements */,
 				66C9C9062F9CB43900A25777 /* README.md */,
 				66C9C8B62F9BAB4A00A25777 /* TibberWatch Watch App */,
+				66C9C9392F9E6A4A00A25777 /* TibberComplication */,
+				66C9C9342F9E6A4A00A25777 /* Frameworks */,
 				66C9C8AD2F9BAB4A00A25777 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -74,8 +139,18 @@
 			children = (
 				66C9C8AC2F9BAB4A00A25777 /* TibberWatch.app */,
 				66C9C8B22F9BAB4A00A25777 /* TibberWatch Watch App.app */,
+				66C9C9332F9E6A4900A25777 /* TibberComplicationExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		66C9C9342F9E6A4A00A25777 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				66C9C9352F9E6A4A00A25777 /* WidgetKit.framework */,
+				66C9C9372F9E6A4A00A25777 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -107,10 +182,12 @@
 				66C9C8AE2F9BAB4A00A25777 /* Sources */,
 				66C9C8AF2F9BAB4A00A25777 /* Frameworks */,
 				66C9C8B02F9BAB4A00A25777 /* Resources */,
+				66C9C94A2F9E6A4D00A25777 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				66C9C9442F9E6A4D00A25777 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				66C9C8B62F9BAB4A00A25777 /* TibberWatch Watch App */,
@@ -121,6 +198,28 @@
 			productName = "TibberWatch Watch App";
 			productReference = 66C9C8B22F9BAB4A00A25777 /* TibberWatch Watch App.app */;
 			productType = "com.apple.product-type.application";
+		};
+		66C9C9322F9E6A4900A25777 /* TibberComplicationExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66C9C9472F9E6A4D00A25777 /* Build configuration list for PBXNativeTarget "TibberComplicationExtension" */;
+			buildPhases = (
+				66C9C92F2F9E6A4900A25777 /* Sources */,
+				66C9C9302F9E6A4900A25777 /* Frameworks */,
+				66C9C9312F9E6A4900A25777 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				66C9C9392F9E6A4A00A25777 /* TibberComplication */,
+			);
+			name = TibberComplicationExtension;
+			packageProductDependencies = (
+			);
+			productName = TibberComplicationExtension;
+			productReference = 66C9C9332F9E6A4900A25777 /* TibberComplicationExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -137,8 +236,12 @@
 				TargetAttributes = {
 					66C9C8AB2F9BAB4A00A25777 = {
 						CreatedOnToolsVersion = 26.4.1;
+						LastSwiftMigration = 2640;
 					};
 					66C9C8B12F9BAB4A00A25777 = {
+						CreatedOnToolsVersion = 26.4.1;
+					};
+					66C9C9322F9E6A4900A25777 = {
 						CreatedOnToolsVersion = 26.4.1;
 					};
 				};
@@ -159,6 +262,7 @@
 			targets = (
 				66C9C8AB2F9BAB4A00A25777 /* TibberWatch */,
 				66C9C8B12F9BAB4A00A25777 /* TibberWatch Watch App */,
+				66C9C9322F9E6A4900A25777 /* TibberComplicationExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -179,10 +283,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66C9C9312F9E6A4900A25777 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		66C9C8AE2F9BAB4A00A25777 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66C9C92F2F9E6A4900A25777 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -196,6 +314,11 @@
 			isa = PBXTargetDependency;
 			target = 66C9C8B12F9BAB4A00A25777 /* TibberWatch Watch App */;
 			targetProxy = 66C9C8B42F9BAB4A00A25777 /* PBXContainerItemProxy */;
+		};
+		66C9C9442F9E6A4D00A25777 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C9C9322F9E6A4900A25777 /* TibberComplicationExtension */;
+			targetProxy = 66C9C9432F9E6A4D00A25777 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -322,6 +445,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = "TibberWatch Watch App/TibberWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 653FDRQ8RX;
@@ -357,6 +481,7 @@
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=watchos*]" = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = "TibberWatch Watch App/TibberWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 653FDRQ8RX;
@@ -389,15 +514,18 @@
 		66C9C8C42F9BAB4B00A25777 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 653FDRQ8RX;
 				INFOPLIST_KEY_CFBundleDisplayName = TibberWatch;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ich.TibberWatch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -406,10 +534,12 @@
 		66C9C8C52F9BAB4B00A25777 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 653FDRQ8RX;
 				INFOPLIST_KEY_CFBundleDisplayName = TibberWatch;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ich.TibberWatch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -418,6 +548,75 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		66C9C9482F9E6A4D00A25777 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = TibberComplicationExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 653FDRQ8RX;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TibberComplication/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TibberComplication;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ich.TibberWatch.watchkitapp.TibberComplication;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.4;
+			};
+			name = Debug;
+		};
+		66C9C9492F9E6A4D00A25777 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = TibberComplicationExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 653FDRQ8RX;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TibberComplication/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TibberComplication;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ich.TibberWatch.watchkitapp.TibberComplication;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 26.4;
 			};
 			name = Release;
 		};
@@ -447,6 +646,15 @@
 			buildConfigurations = (
 				66C9C8C42F9BAB4B00A25777 /* Debug */,
 				66C9C8C52F9BAB4B00A25777 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66C9C9472F9E6A4D00A25777 /* Build configuration list for PBXNativeTarget "TibberComplicationExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66C9C9482F9E6A4D00A25777 /* Debug */,
+				66C9C9492F9E6A4D00A25777 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

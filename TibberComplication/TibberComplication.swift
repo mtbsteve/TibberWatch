@@ -29,9 +29,21 @@ struct TibberPriceProvider: TimelineProvider {
     }
 
     private func currentEntry() -> TibberPriceEntry {
-        let defaults = UserDefaults.standard
+        // ⚠️ Replace this suite name with your actual App Group identifier.
+        // It must EXACTLY match the value in Signing & Capabilities for both targets.
+        let suiteName = "group.com.stephan.tibberwatch"
+
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            print("⚠️ Complication: failed to open UserDefaults suite '\(suiteName)' — check App Group setup")
+            return TibberPriceEntry(date: Date(), price: 0, level: .normal, hasData: false)
+        }
+
         let price = defaults.double(forKey: "complication_price")
         let levelRaw = defaults.string(forKey: "complication_level") ?? ""
+        let updated = defaults.object(forKey: "complication_updated") as? Date
+
+        //print("🧩 Complication read — price: \(price), level: '\(levelRaw)', updated: \(updated?.description ?? "nil")")
+
         let level = PriceLevel(rawValue: levelRaw) ?? .normal
         let hasData = price > 0
         return TibberPriceEntry(
@@ -78,20 +90,24 @@ struct TibberComplicationView: View {
                     .foregroundColor(.secondary)
             }
         }
-        .widgetAccentable()
     }
 
     // MARK: Corner
+    /// Corner complication: small color-coded dot + neutral curved label along the bezel
     private var cornerView: some View {
-        Text(entry.hasData ? String(format: "%.2f", entry.price) : "--")
-            .font(.system(size: 14, weight: .bold, design: .rounded))
-            .foregroundColor(levelColor)
-            .widgetLabel("Tibber price")
+        Circle()
+            .fill(levelColor)
+            .padding(8)
+            .widgetLabel {
+                Text(entry.hasData
+                     ? "Tibber  \(String(format: "%.2f", entry.price)) €"
+                     : "Tibber  -- €")
+            }
     }
 
     // MARK: Inline
     private var inlineView: some View {
-        Text(entry.hasData ? "⚡ \(String(format: "%.3f", entry.price)) €/kWh" : "⚡ --")
+        Text(entry.hasData ? "⚡ \(String(format: "%.3f", entry.price)) €/kWh" : "⚡ -- €")
             .foregroundColor(levelColor)
     }
 
@@ -114,7 +130,6 @@ struct TibberComplicationView: View {
                     .foregroundColor(levelColor)
             }
         }
-        .widgetAccentable()
     }
 }
 

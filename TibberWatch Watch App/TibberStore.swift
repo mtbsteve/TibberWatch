@@ -16,6 +16,9 @@ class TibberStore: ObservableObject {
     // MARK: - Persisted API Token
     @AppStorage("tibber_api_token") var apiToken: String = ""
 
+    // Last real token entered, kept even after clearToken so the setup view can pre-fill it.
+    @AppStorage("tibber_last_token") var lastEnteredToken: String = ""
+
     // MARK: - Auto-refresh
     private var refreshTask: Task<Void, Never>?
 
@@ -80,13 +83,24 @@ class TibberStore: ObservableObject {
     var hasTomorrowData: Bool { !(priceData?.tomorrow.isEmpty ?? true) }
 
     // MARK: - Complication data sharing
+    /// Shared App Group suite name — must match the value in Signing & Capabilities
+    /// for BOTH the Watch App target and the Complication target.
+    private static let appGroupID = "group.com.stephan.tibberwatch"
+
     /// Persist the current price + level so the complication can read it
-    private func saveComplicationData() {
-        guard let entry = priceData?.currentEntry else { return }
-        let defaults = UserDefaults.standard
+    func saveComplicationData() {
+        guard let entry = priceData?.currentEntry else {
+            print("⚠️ No current entry to save for complication")
+            return
+        }
+        guard let defaults = UserDefaults(suiteName: Self.appGroupID) else {
+            print("⚠️ Failed to open UserDefaults suite '\(Self.appGroupID)' — check App Group config")
+            return
+        }
         defaults.set(entry.total, forKey: "complication_price")
         defaults.set(entry.level.rawValue, forKey: "complication_level")
         defaults.set(Date(), forKey: "complication_updated")
+        print("✅ Saved complication data: \(entry.total) €/kWh, level: \(entry.level.rawValue)")
 
         // Force widget timeline refresh
         WidgetCenter.shared.reloadAllTimelines()

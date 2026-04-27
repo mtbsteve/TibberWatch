@@ -42,7 +42,13 @@ class TibberAPIService {
     """
 
     static func fetchPrices(apiToken: String) async throws -> PriceData {
-        print("🔑 API call with token length: \(apiToken.count)")
+        //print("🔑 API call with token length: \(apiToken.count)")
+        // Hex dump of first 12 and last 8 bytes to compare against the source
+        //let firstBytes = apiToken.prefix(12).utf8.map { String(format: "%02x", $0) }.joined(separator: " ")
+        //let lastBytes  = apiToken.suffix(8).utf8.map  { String(format: "%02x", $0) }.joined(separator: " ")
+        //print("🔑 First 12 bytes: \(firstBytes)")
+        //print("🔑 Last 8 bytes:  \(lastBytes)")
+        //print("🔑 Authorization header: 'Bearer \(apiToken)'")
 
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"

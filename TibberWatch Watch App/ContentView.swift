@@ -70,6 +70,16 @@ struct PriceMainView: View {
                         .foregroundColor(.secondary)
                         .padding(.top, 2)
                 }
+
+                // Only show in demo mode — protect against accidental taps with real data
+                if store.apiToken == "demo" {
+                    Button("Exit Demo Mode") {
+                        store.clearToken()
+                    }
+                    .font(.system(size: 9))
+                    .foregroundColor(.orange)
+                    .padding(.top, 8)
+                }
             }
             .padding(.horizontal, 4)
         }
@@ -236,27 +246,53 @@ struct ErrorView: View {
     let message: String
 
     var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 22))
-                .foregroundColor(.orange)
-            Text(message)
-                .font(.system(size: 10))
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-            Button("Retry") {
-                Task { await store.fetchPrices() }
-            }
-            .font(.system(size: 11, weight: .medium))
-            .foregroundColor(.blue)
+        ScrollView {
+            VStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.system(size: 22))
+                    .foregroundColor(.orange)
+                Text(message)
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
 
-            Button("Change Token") {
-                store.clearToken()
+                // Diagnostic info — visible directly on the watch
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Token diagnostics:")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundColor(.yellow)
+                    Text("Length: \(store.apiToken.count)")
+                        .font(.system(size: 8, design: .monospaced))
+                    Text("First 6: \(String(store.apiToken.prefix(6)))")
+                        .font(.system(size: 8, design: .monospaced))
+                    Text("Last 4: \(String(store.apiToken.suffix(4)))")
+                        .font(.system(size: 8, design: .monospaced))
+                    let bytes = store.apiToken.prefix(4).utf8.map {
+                        String(format: "%02x", $0)
+                    }.joined(separator: " ")
+                    Text("Bytes: \(bytes)")
+                        .font(.system(size: 8, design: .monospaced))
+                        .foregroundColor(.cyan)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(6)
+                .background(Color.white.opacity(0.06))
+                .cornerRadius(6)
+
+                Button("Retry") {
+                    Task { await store.fetchPrices() }
+                }
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.blue)
+
+                Button("Change Token") {
+                    store.clearToken()
+                }
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.orange)
             }
-            .font(.system(size: 11, weight: .medium))
-            .foregroundColor(.orange)
+            .padding()
         }
-        .padding()
     }
 }
 
@@ -290,7 +326,23 @@ struct TokenSetupView: View {
                         .trimmingCharacters(in: .whitespacesAndNewlines)
                         .components(separatedBy: .controlCharacters).joined()
                         .components(separatedBy: .whitespacesAndNewlines).joined()
+                        // Replace smart quotes / typographic chars with plain ASCII equivalents
+                        .replacingOccurrences(of: "\u{2018}", with: "'")
+                        .replacingOccurrences(of: "\u{2019}", with: "'")
+                        .replacingOccurrences(of: "\u{201C}", with: "\"")
+                        .replacingOccurrences(of: "\u{201D}", with: "\"")
+                        .replacingOccurrences(of: "\u{2013}", with: "-")  // en-dash → hyphen
+                        .replacingOccurrences(of: "\u{2014}", with: "-")  // em-dash → hyphen
+
+                    print("🔑 Cleaned token length: \(cleaned.count)")
+                    print("🔑 First 8 chars: \(cleaned.prefix(8))")
+                    print("🔑 Last 4 chars: \(cleaned.suffix(4))")
+                    // Print bytes of first 4 chars to spot smart-quote / unicode issues
+                    let firstBytes = cleaned.prefix(4).utf8.map { String(format: "%02x", $0) }.joined(separator: " ")
+                    print("🔑 First 4 bytes (hex): \(firstBytes)")
+
                     store.apiToken = cleaned
+                    store.lastEnteredToken = cleaned
                     Task { await store.fetchPrices() }
                 }
                 .font(.system(size: 11, weight: .semibold))
@@ -304,11 +356,18 @@ struct TokenSetupView: View {
                 Button("Use Demo Data") {
                     store.apiToken = "demo"
                     store.priceData = DemoData.priceData
+                    store.saveComplicationData()
                 }
                 .font(.system(size: 10))
                 .foregroundColor(.blue)
             }
             .padding()
+        }
+        .onAppear {
+            // Pre-fill with the previously entered real token (not "demo")
+            if tokenInput.isEmpty && store.lastEnteredToken != "demo" {
+                tokenInput = store.lastEnteredToken
+            }
         }
     }
 }
