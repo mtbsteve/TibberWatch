@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import WidgetKit
 
 // MARK: - Store
 @MainActor
@@ -42,6 +43,7 @@ class TibberStore: ObservableObject {
             priceData = data
             lastUpdated = Date()
             isLoading = false
+            saveComplicationData()
             startAutoRefresh()
         } catch {
             self.error = error.localizedDescription
@@ -76,4 +78,17 @@ class TibberStore: ObservableObject {
 
     var hasToken: Bool { !apiToken.isEmpty }
     var hasTomorrowData: Bool { !(priceData?.tomorrow.isEmpty ?? true) }
+
+    // MARK: - Complication data sharing
+    /// Persist the current price + level so the complication can read it
+    private func saveComplicationData() {
+        guard let entry = priceData?.currentEntry else { return }
+        let defaults = UserDefaults.standard
+        defaults.set(entry.total, forKey: "complication_price")
+        defaults.set(entry.level.rawValue, forKey: "complication_level")
+        defaults.set(Date(), forKey: "complication_updated")
+
+        // Force widget timeline refresh
+        WidgetCenter.shared.reloadAllTimelines()
+    }
 }

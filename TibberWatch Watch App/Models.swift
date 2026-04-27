@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 // MARK: - Price Level
 enum PriceLevel: String, Codable {
@@ -93,6 +94,40 @@ struct RawPriceEntry: Codable {
         }
         print("⚠️ Failed to parse date: \(startsAt)")
         return nil
+    }
+}
+
+// MARK: - PriceLevel UI helpers (shared with complication)
+extension PriceLevel {
+    /// Color hex used by complication and current-price card
+    var displayColorHex: UInt32 {
+        switch self {
+        case .veryCheap:     return 0x006400  // dark green
+        case .cheap:         return 0x2ECC40  // green
+        case .normal:        return 0xFFD700  // yellow
+        case .expensive:     return 0xFF4136  // red
+        case .veryExpensive: return 0x8B0000  // dark red
+        }
+    }
+
+    var shortLabel: String {
+        switch self {
+        case .veryCheap:     return "Very Cheap"
+        case .cheap:         return "Cheap"
+        case .normal:        return "Normal"
+        case .expensive:     return "Expensive"
+        case .veryExpensive: return "Very High"
+        }
+    }
+}
+
+// MARK: - Color hex helper
+extension Color {
+    init(hexValue: UInt32) {
+        let r = Double((hexValue >> 16) & 0xFF) / 255.0
+        let g = Double((hexValue >> 8)  & 0xFF) / 255.0
+        let b = Double( hexValue        & 0xFF) / 255.0
+        self.init(red: r, green: g, blue: b)
     }
 }
 
