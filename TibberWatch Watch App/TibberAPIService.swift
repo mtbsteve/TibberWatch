@@ -18,6 +18,7 @@ class TibberAPIService {
                 energy
                 tax
                 startsAt
+                currency
                 level
               }
               today {
@@ -25,6 +26,7 @@ class TibberAPIService {
                 energy
                 tax
                 startsAt
+                currency
                 level
               }
               tomorrow {
@@ -32,6 +34,7 @@ class TibberAPIService {
                 energy
                 tax
                 startsAt
+                currency
                 level
               }
             }
@@ -91,14 +94,28 @@ class TibberAPIService {
         let todayEntries = priceInfo.today.compactMap { $0.toPriceEntry() }
         let tomorrowEntries = priceInfo.tomorrow.compactMap { $0.toPriceEntry() }
 
-        print("✅ Got \(todayEntries.count) entries today, \(tomorrowEntries.count) tomorrow")
+        let currencyCode = priceInfo.current?.currency ?? priceInfo.today.first?.currency ?? "EUR"
+        let currencyUnit = Self.currencyUnit(for: currencyCode)
+
+        print("✅ Got \(todayEntries.count) entries today, \(tomorrowEntries.count) tomorrow, currency: \(currencyCode)")
 
         return PriceData(
             today: todayEntries,
             tomorrow: tomorrowEntries,
-            currency: "€/kWh",
+            currency: currencyUnit,
             homeName: "Home"
         )
+    }
+
+    private static func currencyUnit(for code: String) -> String {
+        switch code {
+        case "EUR": return "€/kWh"
+        case "GBP": return "£/kWh"
+        case "NOK": return "kr/kWh"
+        case "SEK": return "kr/kWh"
+        case "DKK": return "kr/kWh"
+        default:    return "\(code)/kWh"
+        }
     }
 }
 

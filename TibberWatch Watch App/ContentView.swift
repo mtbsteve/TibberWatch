@@ -21,6 +21,8 @@ struct ContentView: View {
         .task {
             if store.hasToken && store.priceData == nil {
                 await store.fetchPrices()
+            } else {
+                store.checkForDayRollover()
             }
         }
     }
@@ -334,12 +336,12 @@ struct TokenSetupView: View {
                         .replacingOccurrences(of: "\u{2013}", with: "-")  // en-dash → hyphen
                         .replacingOccurrences(of: "\u{2014}", with: "-")  // em-dash → hyphen
 
-                    print("🔑 Cleaned token length: \(cleaned.count)")
-                    print("🔑 First 8 chars: \(cleaned.prefix(8))")
-                    print("🔑 Last 4 chars: \(cleaned.suffix(4))")
+                    //print("🔑 Cleaned token length: \(cleaned.count)")
+                    //print("🔑 First 8 chars: \(cleaned.prefix(8))")
+                    //print("🔑 Last 4 chars: \(cleaned.suffix(4))")
                     // Print bytes of first 4 chars to spot smart-quote / unicode issues
-                    let firstBytes = cleaned.prefix(4).utf8.map { String(format: "%02x", $0) }.joined(separator: " ")
-                    print("🔑 First 4 bytes (hex): \(firstBytes)")
+                    //let firstBytes = cleaned.prefix(4).utf8.map { String(format: "%02x", $0) }.joined(separator: " ")
+                    //print("🔑 First 4 bytes (hex): \(firstBytes)")
 
                     store.apiToken = cleaned
                     store.lastEnteredToken = cleaned

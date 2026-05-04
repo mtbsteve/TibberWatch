@@ -6,6 +6,7 @@ struct TibberPriceEntry: TimelineEntry {
     let date: Date
     let price: Double
     let level: PriceLevel
+    let currency: String   // e.g. "€/kWh", "kr/kWh"
     let hasData: Bool
 }
 
@@ -13,7 +14,7 @@ struct TibberPriceEntry: TimelineEntry {
 struct TibberPriceProvider: TimelineProvider {
 
     func placeholder(in context: Context) -> TibberPriceEntry {
-        TibberPriceEntry(date: Date(), price: 0.32, level: .normal, hasData: true)
+        TibberPriceEntry(date: Date(), price: 0.32, level: .normal, currency: "€/kWh", hasData: true)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (TibberPriceEntry) -> Void) {
@@ -29,20 +30,16 @@ struct TibberPriceProvider: TimelineProvider {
     }
 
     private func currentEntry() -> TibberPriceEntry {
-        // ⚠️ Replace this suite name with your actual App Group identifier.
-        // It must EXACTLY match the value in Signing & Capabilities for both targets.
-        let suiteName = "group.com.stephan.tibberwatch"
+        let suiteName = "group.com.mtbsteve.tibberwatch"
 
         guard let defaults = UserDefaults(suiteName: suiteName) else {
             print("⚠️ Complication: failed to open UserDefaults suite '\(suiteName)' — check App Group setup")
-            return TibberPriceEntry(date: Date(), price: 0, level: .normal, hasData: false)
+            return TibberPriceEntry(date: Date(), price: 0, level: .normal, currency: "€/kWh", hasData: false)
         }
 
         let price = defaults.double(forKey: "complication_price")
         let levelRaw = defaults.string(forKey: "complication_level") ?? ""
-        let updated = defaults.object(forKey: "complication_updated") as? Date
-
-        //print("🧩 Complication read — price: \(price), level: '\(levelRaw)', updated: \(updated?.description ?? "nil")")
+        let currency = defaults.string(forKey: "complication_currency") ?? "€/kWh"
 
         let level = PriceLevel(rawValue: levelRaw) ?? .normal
         let hasData = price > 0
@@ -50,6 +47,7 @@ struct TibberPriceProvider: TimelineProvider {
             date: Date(),
             price: price,
             level: level,
+            currency: currency,
             hasData: hasData
         )
     }
@@ -74,6 +72,10 @@ struct TibberComplicationView: View {
         Color(hexValue: entry.level.displayColorHex)
     }
 
+    private var currencySymbol: String {
+        entry.currency.components(separatedBy: "/").first ?? entry.currency
+    }
+
     // MARK: Circular
     private var circularView: some View {
         ZStack {
@@ -85,7 +87,7 @@ struct TibberComplicationView: View {
                 Text(entry.hasData ? String(format: "%.2f", entry.price) : "--")
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
-                Text("€/kWh")
+                Text(entry.currency)
                     .font(.system(size: 6))
                     .foregroundColor(.secondary)
             }
@@ -100,14 +102,14 @@ struct TibberComplicationView: View {
             .padding(8)
             .widgetLabel {
                 Text(entry.hasData
-                     ? "Tibber  \(String(format: "%.2f", entry.price)) €"
-                     : "Tibber  -- €")
+                     ? "Tibber  \(String(format: "%.2f", entry.price)) \(currencySymbol)"
+                     : "Tibber  --")
             }
     }
 
     // MARK: Inline
     private var inlineView: some View {
-        Text(entry.hasData ? "⚡ \(String(format: "%.3f", entry.price)) €/kWh" : "⚡ -- €")
+        Text(entry.hasData ? "⚡ \(String(format: "%.3f", entry.price)) \(entry.currency)" : "⚡ --")
             .foregroundColor(levelColor)
     }
 
@@ -121,7 +123,7 @@ struct TibberComplicationView: View {
                 HStack(alignment: .firstTextBaseline, spacing: 2) {
                     Text(entry.hasData ? String(format: "%.3f", entry.price) : "--")
                         .font(.system(size: 16, weight: .bold, design: .rounded))
-                    Text("€/kWh")
+                    Text(entry.currency)
                         .font(.system(size: 8))
                         .foregroundColor(.secondary)
                 }

@@ -21,6 +21,8 @@ class TibberStore: ObservableObject {
 
     // MARK: - Auto-refresh
     private var refreshTask: Task<Void, Never>?
+    /// The calendar day (yyyy-MM-dd in local time) that the currently cached `priceData.today` represents.
+    private var cachedDataDay: String?
 
     init() {
         if !apiToken.isEmpty {
@@ -45,6 +47,7 @@ class TibberStore: ObservableObject {
             let data = try await TibberAPIService.fetchPrices(apiToken: apiToken)
             priceData = data
             lastUpdated = Date()
+            cachedDataDay = Self.todayKey()
             isLoading = false
             saveComplicationData()
             startAutoRefresh()
@@ -55,20 +58,44 @@ class TibberStore: ObservableObject {
         }
     }
 
+    /// Call when the view appears or the watch wakes — checks if the calendar day
+    /// has changed since the last fetch. If so, reset to "Today" view and fetch fresh data.
+    func checkForDayRollover() {
+        let now = Self.todayKey()
+        guard let cached = cachedDataDay else { return }
+        if cached != now {
+            print("🌅 Day rollover detected: cached=\(cached), now=\(now). Resetting view and refetching.")
+            // Reset to Today view — yesterday's "tomorrow" is now today, but our cached
+            // tomorrow array is for the wrong day, so we need fresh data anyway.
+            showTomorrow = false
+            // Mark cache as stale so we don't re-trigger this every appear
+            cachedDataDay = now
+            Task { await fetchPrices() }
+        }
+    }
+
     func clearToken() {
         refreshTask?.cancel()
         apiToken = ""
         priceData = nil
         error = nil
         isLoading = false
+        cachedDataDay = nil
     }
 
     private func startAutoRefresh() {
         refreshTask?.cancel()
         refreshTask = Task {
             while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 30 * 60 * 1_000_000_000)
+                try? await Task.sleep(nanoseconds: 15 * 60 * 1_000_000_000)
                 if !Task.isCancelled {
+                    // On every refresh, also check for day rollover
+                    if let cached = cachedDataDay, cached != Self.todayKey() {
+                        await MainActor.run {
+                            print("🌅 Auto-refresh detected day rollover")
+                            showTomorrow = false
+                        }
+                    }
                     await fetchPrices()
                 }
             }
@@ -82,10 +109,21 @@ class TibberStore: ObservableObject {
     var hasToken: Bool { !apiToken.isEmpty }
     var hasTomorrowData: Bool { !(priceData?.tomorrow.isEmpty ?? true) }
 
+    // MARK: - Day key helper
+    /// Returns yyyy-MM-dd in the user's local time zone for the current moment.
+    private static func todayKey() -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date())
+    }
+
     // MARK: - Complication data sharing
     /// Shared App Group suite name — must match the value in Signing & Capabilities
     /// for BOTH the Watch App target and the Complication target.
-    private static let appGroupID = "group.com.stephan.tibberwatch"
+    private static let appGroupID = "group.com.mtbsteve.tibberwatch"
 
     /// Persist the current price + level so the complication can read it
     func saveComplicationData() {
@@ -99,6 +137,7 @@ class TibberStore: ObservableObject {
         }
         defaults.set(entry.total, forKey: "complication_price")
         defaults.set(entry.level.rawValue, forKey: "complication_level")
+        defaults.set(priceData?.currency ?? "€/kWh", forKey: "complication_currency")
         defaults.set(Date(), forKey: "complication_updated")
         print("✅ Saved complication data: \(entry.total) €/kWh, level: \(entry.level.rawValue)")
 

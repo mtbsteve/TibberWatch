@@ -81,6 +81,7 @@ struct RawPriceEntry: Codable {
     let tax: Double
     let startsAt: String
     let level: PriceLevel
+    let currency: String
 
     func toPriceEntry() -> PriceEntry? {
         let formatter = ISO8601DateFormatter()
