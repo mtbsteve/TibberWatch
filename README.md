@@ -11,7 +11,9 @@ A standalone watchOS app that displays Tibber electricity prices per kWh as a 15
 - 📈 **Min / Avg / Max stats** — scoped to the day being shown (today vs. tomorrow)
 - 🕒 **Tomorrow toggle** — when next-day prices become available
 - ⌚ **Watch complication** — coloured dot + curved price label along the bezel
-- 🔁 **Auto-refresh** every 30 minutes after a successful fetch
+- 🌍 **Multi-currency** — displays EUR, GBP, NOK, SEK, DKK automatically from the API
+- 🔁 **Auto-refresh** every 15 minutes after a successful fetch
+- 🌅 **Day rollover detection** — resets to Today view and refetches when the calendar date changes
 - 🛠 **Token reset** — "Change Token" button on the error screen, "Exit Demo Mode" in demo
 - 💾 **Token pre-fill** — last entered token is remembered and pre-filled on the setup screen
 - 🎭 **Demo mode** — explore the UI without a Tibber account
@@ -114,7 +116,7 @@ The corner complication shows a colour-coded dot and a curved price label along 
 | Expensive | 🔴 Red | #FF4136 |
 | Very Expensive | 🟥 Dark red | #8B0000 |
 
-Tapping the complication opens the Watch App (built-in WidgetKit behaviour, no code needed).
+Tapping the complication opens the Watch App. The price updates automatically every 15 minutes in sync with the price slot boundaries — no app launch required.
 
 > **Note:** Some watch faces (e.g., the chronograph face) tint all complications with a single accent colour, overriding the level colour. To see the proper colour-coded dot, use a face that allows full-colour complications: **Modular**, **Modular Compact**, **Infograph Modular**, or **Color**.
 
@@ -147,14 +149,21 @@ TibberWatch (Watch App target)              TibberComplication (Widget target)
                   ↓
           saveComplicationData()
                   ↓
-       UserDefaults(suiteName: "group.com.yourname.tibberwatch")
+       UserDefaults(suiteName: "group.com.mtbsteve.tibberwatch")
+         complication_price / _level / _currency   ← current slot scalars
+         complication_today_entries                 ← JSON [PriceEntry] for today
+         complication_tomorrow_entries              ← JSON [PriceEntry] for tomorrow
                   ↑ shared via App Group ↑
+       TibberPriceProvider.getTimeline()
+         decodes arrays → one TimelineEntry per 15-min slot
+         policy: .atEnd  (WidgetKit requests new timeline after last slot)
 ```
 
 **State**: `TibberStore` (`@MainActor ObservableObject` + `@AppStorage` for token persistence)
 **API**: GraphQL POST to `https://api.tibber.com/v1-beta/gql`
 **Resolution**: `priceInfo(resolution: QUARTER_HOURLY)` — 96 slots per day
-**Refresh**: Every 30 minutes after a successful fetch (cancels on error)
+**Currency**: read from API per slot; mapped to display unit (€, £, kr)
+**Refresh**: Every 15 minutes after a successful fetch; day rollover also triggers a refetch
 **Date parsing**: `ISO8601DateFormatter` with `.withFractionalSeconds` for `2026-04-24T10:00:00.000+02:00`
 
 ---
@@ -167,6 +176,7 @@ TibberWatch (Watch App target)              TibberComplication (Widget target)
 - **The CFPrefs daemon log** about App Groups (`Couldn't read values in CFPrefsPlistSource…`) is harmless system noise — ignore it
 - **Tomorrow's prices** typically appear in the early afternoon (CET) once the day-ahead market clears
 - **Watch face tinting** can override custom complication colours — choose the face accordingly
+- **After a fresh install**, open the Watch App once to fetch prices and populate the complication timeline; the complication shows `--` until the first successful fetch
 
 ---
 
