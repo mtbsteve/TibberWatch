@@ -22,34 +22,55 @@ struct TibberPriceProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<TibberPriceEntry>) -> Void) {
-        let entry = currentEntry()
-        // Refresh every 15 minutes to match price slot resolution
-        let nextUpdate = Date().addingTimeInterval(15 * 60)
-        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
-        completion(timeline)
+        let suiteName = "group.com.mtbsteve.tibberwatch"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            let fallback = TibberPriceEntry(date: Date(), price: 0, level: .normal, currency: "€/kWh", hasData: false)
+            completion(Timeline(entries: [fallback], policy: .after(Date().addingTimeInterval(15 * 60))))
+            return
+        }
+
+        let currency = defaults.string(forKey: "complication_currency") ?? "€/kWh"
+        let decoder = JSONDecoder()
+        let now = Date()
+
+        var priceEntries: [PriceEntry] = []
+        if let data = defaults.data(forKey: "complication_today_entries"),
+           let entries = try? decoder.decode([PriceEntry].self, from: data) {
+            priceEntries.append(contentsOf: entries)
+        }
+        if let data = defaults.data(forKey: "complication_tomorrow_entries"),
+           let entries = try? decoder.decode([PriceEntry].self, from: data) {
+            priceEntries.append(contentsOf: entries)
+        }
+
+        // One timeline entry per 15-min slot; include the currently active slot
+        let timelineEntries = priceEntries
+            .filter { $0.startsAt >= now.addingTimeInterval(-15 * 60) }
+            .sorted { $0.startsAt < $1.startsAt }
+            .map { p in
+                TibberPriceEntry(date: p.startsAt, price: p.total, level: p.level, currency: currency, hasData: true)
+            }
+
+        if timelineEntries.isEmpty {
+            // No stored data — fall back to single entry and try again in 15 min
+            let fallback = TibberPriceEntry(date: now, price: 0, level: .normal, currency: currency, hasData: false)
+            completion(Timeline(entries: [fallback], policy: .after(now.addingTimeInterval(15 * 60))))
+        } else {
+            // .atEnd asks WidgetKit to call getTimeline again after the last slot expires
+            completion(Timeline(entries: timelineEntries, policy: .atEnd))
+        }
     }
 
     private func currentEntry() -> TibberPriceEntry {
         let suiteName = "group.com.mtbsteve.tibberwatch"
-
         guard let defaults = UserDefaults(suiteName: suiteName) else {
-            print("⚠️ Complication: failed to open UserDefaults suite '\(suiteName)' — check App Group setup")
             return TibberPriceEntry(date: Date(), price: 0, level: .normal, currency: "€/kWh", hasData: false)
         }
-
         let price = defaults.double(forKey: "complication_price")
         let levelRaw = defaults.string(forKey: "complication_level") ?? ""
         let currency = defaults.string(forKey: "complication_currency") ?? "€/kWh"
-
         let level = PriceLevel(rawValue: levelRaw) ?? .normal
-        let hasData = price > 0
-        return TibberPriceEntry(
-            date: Date(),
-            price: price,
-            level: level,
-            currency: currency,
-            hasData: hasData
-        )
+        return TibberPriceEntry(date: Date(), price: price, level: level, currency: currency, hasData: price > 0)
     }
 }
 
@@ -144,6 +165,7 @@ struct TibberPriceComplication: Widget {
         StaticConfiguration(kind: kind, provider: TibberPriceProvider()) { entry in
             TibberComplicationView(entry: entry)
                 .containerBackground(.clear, for: .widget)
+                .widgetURL(URL(string: "tibberwatch://open")!)
         }
         .configurationDisplayName("Tibber Price")
         .description("Current electricity price per kWh")

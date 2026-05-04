@@ -125,7 +125,7 @@ class TibberStore: ObservableObject {
     /// for BOTH the Watch App target and the Complication target.
     private static let appGroupID = "group.com.mtbsteve.tibberwatch"
 
-    /// Persist the current price + level so the complication can read it
+    /// Persist current price + full day arrays so the complication can build its own timeline
     func saveComplicationData() {
         guard let entry = priceData?.currentEntry else {
             print("⚠️ No current entry to save for complication")
@@ -139,9 +139,17 @@ class TibberStore: ObservableObject {
         defaults.set(entry.level.rawValue, forKey: "complication_level")
         defaults.set(priceData?.currency ?? "€/kWh", forKey: "complication_currency")
         defaults.set(Date(), forKey: "complication_updated")
-        print("✅ Saved complication data: \(entry.total) €/kWh, level: \(entry.level.rawValue)")
 
-        // Force widget timeline refresh
+        // Encode full price arrays so the complication can schedule per-slot timeline entries
+        let encoder = JSONEncoder()
+        if let today = priceData?.today, let data = try? encoder.encode(today) {
+            defaults.set(data, forKey: "complication_today_entries")
+        }
+        if let tomorrow = priceData?.tomorrow, let data = try? encoder.encode(tomorrow) {
+            defaults.set(data, forKey: "complication_tomorrow_entries")
+        }
+
+        print("✅ Saved complication data: \(entry.total), level: \(entry.level.rawValue), entries: \(priceData?.today.count ?? 0) today / \(priceData?.tomorrow.count ?? 0) tomorrow")
         WidgetCenter.shared.reloadAllTimelines()
     }
 }
