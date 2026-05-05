@@ -145,11 +145,11 @@ struct TibberComplicationView: View {
                     Text(entry.hasData ? String(format: "%.3f", entry.price) : "--")
                         .font(.system(size: 22, weight: .bold, design: .rounded))
                     Text(entry.currency)
-                        .font(.system(size: 11))
+                        .font(.system(size: 12))
                         .foregroundColor(.secondary)
                 }
                 Text(entry.level.shortLabel)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundColor(levelColor)
             }
         }
