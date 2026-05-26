@@ -31,6 +31,7 @@ struct ContentView: View {
 // MARK: - Main Price View
 struct PriceMainView: View {
     @EnvironmentObject var store: TibberStore
+    @Environment(\.scenePhase) private var scenePhase
     let priceData: PriceData
 
     @State private var selectedIndex: Int? = nil
@@ -103,6 +104,12 @@ struct PriceMainView: View {
             }
             .padding(.horizontal, 4)
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            // Reset to "now" whenever the app comes to the foreground.
+            if newPhase == .active {
+                selectedIndex = nil
+            }
+        }
     }
 
     private var headerSection: some View {
@@ -117,6 +124,7 @@ struct PriceMainView: View {
             }
             Spacer()
             Button {
+                selectedIndex = nil
                 Task { await store.fetchPrices() }
             } label: {
                 Image(systemName: "arrow.clockwise")
