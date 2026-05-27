@@ -43,6 +43,7 @@ Token stays on your Apple Watch in the app's sandboxed `UserDefaults`.
 ## Features
 
 - 📊 **96-bar chart** at 15-minute resolution (`QUARTER_HOURLY`)
+- 👆 **Interactive chart scrubbing** — swipe across the chart to inspect any 15-min slot; the info card updates to show that slot's price and level, with a light haptic click as you cross each bar. The indicator snaps back to "now" when you reopen the app or tap refresh.
 - ⚡ **Current price card** — colour-coded by Tibber price level
 - 📈 **Min / Avg / Max stats** — scoped to the day being shown (today vs. tomorrow)
 - 🕒 **Tomorrow toggle** — when next-day prices become available
@@ -133,10 +134,11 @@ Set **watchOS Deployment Target** to **watchOS 10.0** or later for the modern co
 ## Usage
 
 1. Launch the app → enter token (or tap **Use Demo Data** to preview)
-2. ↺ button refreshes manually
-3. Scroll for stats and current price
-4. Toggle **Show Tomorrow** if next-day prices are published
-5. **Change Token** appears on the error screen; **Exit Demo Mode** appears in demo mode
+2. ↺ button refreshes manually (also resets the chart cursor to "now")
+3. **Swipe across the chart** to scrub through the day — the info card below the chart updates to show the price + level of the slot under your finger. Reopen the app or tap refresh to snap back to the current time.
+4. Scroll for stats and current price
+5. Toggle **Show Tomorrow** if next-day prices are published
+6. **Change Token** appears on the error screen; **Exit Demo Mode** appears in demo mode
 
 ---
 
@@ -176,12 +178,17 @@ TibberWatch (Watch App target)              TibberComplication (Widget target)
     │   ├── token diagnostics                       ├── cornerView (dot + curved label)
     │   └── Retry / Change Token                    ├── inlineView
     └── PriceMainView                               └── rectangularView
-        ├── PriceChartView (96 bars)
+        ├── PriceChartView (96 bars + DragGesture → selectedIndex)
         ├── PriceLegendView (00/06/12/18/24)
         ├── PriceMinMaxLabels
-        ├── CurrentPriceCard
+        ├── CurrentPriceCard (live "now" OR user-selected slot)
         ├── StatCell × 3 (day-scoped)
         └── Exit Demo Mode (only in demo)
+
+        selectedIndex resets to nil on:
+          • day toggle (today ↔ tomorrow)
+          • refresh button tap
+          • scenePhase → .active (returning from the watch face)
                   ↓
           saveComplicationData()
                   ↓
@@ -269,8 +276,10 @@ power will be cheapest today and tomorrow — without picking up your phone.
 • Min / Avg / Max stats for the day on screen.
 • Tomorrow toggle: as soon as the day-ahead market clears, plan the dishwasher,
   the EV, or the heat pump for the cheapest window.
+• Interactive chart: swipe across the chart to inspect any 15-min slot of the day.
 • Watch-face complication: keeps the current price and colour level on your face;
-  refreshes every 15 minutes in sync with Tibber's slot boundaries.
+  refreshes every 15 minutes in sync with Tibber's slot boundaries (always shows
+  the live price regardless of what you've explored in the chart).
 • Multi-currency: EUR, GBP, NOK, SEK, DKK out of the box.
 • Demo Mode: preview the UI without a Tibber account.
 
